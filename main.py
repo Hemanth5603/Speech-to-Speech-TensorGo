@@ -17,6 +17,11 @@ client = Groq(
     api_key=api_key,
 )
 
+@app.route("/", methods=['POST'])
+def hello():
+    return jsonify({"response":"Hello"}), 200
+
+
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
