@@ -3,10 +3,16 @@ from groq import Groq
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 
+# Load environment variables from .env file
+load_dotenv()
+
 app = Flask(__name__)
 
 # Initialize the Groq client with your API key
 api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise ValueError("GROQ_API_KEY environment variable not set.")
+
 client = Groq(
     api_key=api_key,
 )
@@ -42,4 +48,6 @@ def chat():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Bind to the port specified by the PORT environment variable
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
