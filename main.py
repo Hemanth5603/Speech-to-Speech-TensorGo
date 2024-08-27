@@ -2,7 +2,7 @@ import os
 from groq import Groq
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-
+import speech_recognition as sr
 # Load environment variables from .env file
 load_dotenv()
 
@@ -52,7 +52,42 @@ def chat():
         # Handle any errors and return a generic error message
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/stt', methods=['POST'])
+def uploadaudio():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        filename = 'voice.wav'
+        file.save(filename)
+        text = audiototext(filename)
+        #return jsonify({'text': text})
+    
+    return jsonify({'error': 'Invalid file format'}), 400
+
+
+def audiototext():
+    r = sr.Recognizer()
+    filename = "audio.wav"
+
+    with sr.AudioFile(filename) as source:
+        # listen for the data (load audio to memory)
+        audio_data = r.record(source)
+        # recognize (convert from speech to text)
+        text = r.recognize_google(audio_data)
+        print(text)
+
+
+
+
 if __name__ == '__main__':
     # Bind to the port specified by the PORT environment variable
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    # port = int(os.environ.get("PORT", 5000))
+    # app.run(host='0.0.0.0', port=port)
+    audiototext()
