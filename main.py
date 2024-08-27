@@ -63,18 +63,21 @@ def uploadaudio():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
 
-    if file:
-        filename = 'voice.wav'
+    if file and allowed_file(file.filename):
+        filename = 'audio.wav'
         file.save(filename)
         text = audiototext(filename)
-        #return jsonify({'text': text})
+        return jsonify({'text': text})
     
     return jsonify({'error': 'Invalid file format'}), 400
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ['wav']
 
-def audiototext():
+
+def audiototext(incommingFile):
     r = sr.Recognizer()
-    filename = "audio.wav"
+    filename = incommingFile
 
     with sr.AudioFile(filename) as source:
         # listen for the data (load audio to memory)
@@ -88,6 +91,7 @@ def audiototext():
 
 if __name__ == '__main__':
     # Bind to the port specified by the PORT environment variable
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    # port = int(os.environ.get("PORT", 5000))
+    # app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
     #audiototext()
