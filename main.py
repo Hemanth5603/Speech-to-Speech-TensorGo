@@ -25,13 +25,12 @@ def hello():
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        # Get the user input from the POST request
+        
         user_input = request.json.get('message')
-
         if not user_input:
             return jsonify({"error": "No message provided"}), 400
 
-        # Call the Groq API to generate the chat completion
+      
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -42,14 +41,12 @@ def chat():
             model="llama3-8b-8192",
         )
 
-        # Extract the response from the model
+       
         model_response = chat_completion.choices[0].message.content
-
-        # Return the model's response as JSON
         return jsonify({"response": model_response}), 200
 
     except Exception as e:
-        # Handle any errors and return a generic error message
+     
         return jsonify({"error": str(e)}), 500
 
 
@@ -68,7 +65,7 @@ def uploadaudio():
         file.save(filename)
         text = audiototext(filename)
         return jsonify({'text': text})
-    
+
     return jsonify({'error': 'Invalid file format'}), 400
 
 def allowed_file(filename):
@@ -80,9 +77,9 @@ def audiototext(incommingFile):
     filename = incommingFile
 
     with sr.AudioFile(filename) as source:
-        # listen for the data (load audio to memory)
+      
         audio_data = r.record(source)
-        # recognize (convert from speech to text)
+       
         text = r.recognize_google(audio_data)
         print(text)
         return text
@@ -91,7 +88,7 @@ def audiototext(incommingFile):
 
 
 if __name__ == '__main__':
-    # Bind to the port specified by the PORT environment variable
+  
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
     #app.run(debug=True)
